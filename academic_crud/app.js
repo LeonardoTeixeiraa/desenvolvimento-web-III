@@ -10,6 +10,19 @@ const port = 40000;
 app.use(bodyParser.urlencoded({ extended: false, }));
 app.use(express.json());
 
+//Configurar o CORS
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Acess-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
+  if(req.method === "OPTIONS"){
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
 app.use(router);
 
 // app.use(router);
