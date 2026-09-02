@@ -1,0 +1,26 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5 text-center">
+          <h1 class="display-6 fw-bold text-danger">{{ title or 'Erro' }}</h1>
+          <p class="text-secondary mb-3">
+            {% if message %}
+              {{ message }}
+            {% else %}
+              Ocorreu um erro inesperado.
+            {% endif %}
+          </p>
+          {% if error and error.status %}
+            <p class="mb-0 text-muted">Status: {{ error.status }}</p>
+          {% endif %}
+          <div class="mt-4">
+            <a class="btn btn-primary" href="/login">Voltar para login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
