@@ -1,14 +1,14 @@
-//-- routes/routes.js $`
+//-- routes/routes.js
 const express = require("express");
 const routerApp = express.Router();
+
+const appAlunos = require("../apps/alunos/controller/ctlAluno");
+const appCursos = require("../apps/cursos/controller/ctlCursos");
+const appLogin = require("../apps/login/controller/ctlLogin");
 
 // Rota Login
 routerApp.post("/Login", appLogin.Login);
 routerApp.post("/Logout", appLogin.Logout);
-const express = require("express");
-const appAlunos = require("../apps/alunos/controller/ctlAlunos");
-const appCursos = require("../apps/cursos/controller/ctlCursos");
-const appLogin = require("../apps/login/controller/ctlLogin");
 
 // middleware that is specific to this router
 routerApp.use((req, res, next) => {

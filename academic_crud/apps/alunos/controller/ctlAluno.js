@@ -46,3 +46,4 @@ module.exports = {
   UpdateAluno,
   DeleteAluno,
 };
+

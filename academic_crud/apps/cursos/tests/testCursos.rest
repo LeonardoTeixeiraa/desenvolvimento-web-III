@@ -1,0 +1,51 @@
+### loginAutenticado
+POST http://localhost:40000/Login
+Content-Type: application/json
+
+{
+	"username": "qwe",
+	"password": "qwe"
+}
+
+### Seta o token
+@accessToken = {{loginAutenticado.response.body.token}}
+
+### teste de buscar todos os cursos
+GET http://localhost:40000/getAllCursos
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### teste de buscar curso por ID
+GET http://localhost:40000/getCursoByID/4
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+### teste de inserção de curso
+POST http://localhost:40000/insertCurso
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+	"cursoid": 0,
+	"codigo": "Nutrição",
+	"descricao": "Bacharelado em Nutrição",
+	"ativo": true,
+	"deleted": false
+}
+
+### teste de atualização de curso
+PUT http://localhost:40000/updateCurso/5
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+	"codigo": "xNutricao",
+	"descricao": "xBacharelado em Fisioterapia",
+	"ativo": true,
+	"deleted": false
+}
+
+### teste de exclusão de curso
+DELETE http://localhost:40000/deleteCurso/9
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
