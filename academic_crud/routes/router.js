@@ -7,8 +7,8 @@ const appCursos = require("../apps/cursos/controller/ctlCursos");
 const appLogin = require("../apps/login/controller/ctlLogin");
 
 // Rota Login
-routerApp.post("/Login", appLogin.Login);
-routerApp.post("/Logout", appLogin.Logout);
+routerApp.post(["/Login", "/login"], appLogin.Login);
+routerApp.post(["/Logout", "/logout"], appLogin.Logout);
 
 // middleware that is specific to this router
 routerApp.use((req, res, next) => {
@@ -20,7 +20,7 @@ routerApp.get("/", (req, res) => {
 });
 
 //Rotas de Alunos
-routerApp.get("/getAllAlunos", appAlunos.GetAllAlunos);
+routerApp.get("/getAllAlunos", appLogin.AutenticaJWT, appAlunos.GetAllAlunos);
 routerApp.get(
   "/getAlunoByID/:alunoid",
   appLogin.AutenticaJWT,

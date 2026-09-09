@@ -1,0 +1,87 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <header class="page-header mb-4">
+    <p class="page-kicker text-primary fw-semibold mb-2">Sistema administrativo</p>
+    <h1 class="display-6 fw-bold mb-2">Cursos</h1>
+    <p class="text-secondary mb-0">Listagem de cursos cadastrados.</p>
+  </header>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <div id="cursoError" class="alert alert-danger d-none" role="alert"></div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Código</th>
+              <th>Descrição</th>
+              <th>Ativo</th>
+            </tr>
+          </thead>
+          <tbody id="cursosTableBody">
+            <tr>
+              <td colspan="4" class="text-center text-secondary">Carregando cursos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/dw3frontend.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!dw3IsLogged()) {
+        return;
+      }
+
+      var servidorDw3 = ("{{ servidorDw3 }}" || "http://localhost:40000").trim().replace(/\/+$/, "");
+      var tableBody = document.getElementById("cursosTableBody");
+      var errorBox = document.getElementById("cursoError");
+
+      fetch(servidorDw3 + "/getAllCursos", {
+        method: "GET",
+        headers: dw3MontarHeadersAutenticacao({
+          "Content-Type": "application/json",
+        }),
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("Não foi possível carregar os cursos.");
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          var registros = data && data.registro ? data.registro : [];
+
+          if (!registros.length) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary">Nenhum curso encontrado.</td></tr>';
+            return;
+          }
+
+          tableBody.innerHTML = registros
+            .map(function (curso) {
+              return (
+                "<tr>" +
+                  "<td>" + (curso.cursoid || "") + "</td>" +
+                  "<td>" + (curso.codigo || "") + "</td>" +
+                  "<td>" + (curso.descricao || "") + "</td>" +
+                  "<td>" + (curso.ativo ? "Sim" : "Não") + "</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+        })
+        .catch(function (error) {
+          if (errorBox) {
+            errorBox.textContent = error.message || "Erro ao carregar cursos.";
+            errorBox.classList.remove("d-none");
+          }
+          tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary">Não foi possível carregar os cursos.</td></tr>';
+        });
+    });
+  </script>
+{% endblock %}

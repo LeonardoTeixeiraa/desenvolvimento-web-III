@@ -4,7 +4,7 @@ var path = require("path");
 var nunjucks = require("nunjucks");
 
 require("dotenv").config({
-  path: path.join(__dirname, "dw3frontend.env"),
+  path: path.join(__dirname, "..", "dw3frontend.env"),
   quiet: true,
 });
 
@@ -42,6 +42,24 @@ app.get("/home", function (req, res) {
     title: "Home",
     showNavbar: true,
     activeMenu: "home",
+  });
+});
+
+app.get("/alunos", function (req, res) {
+  res.render("alunos", {
+    title: "Alunos",
+    showNavbar: true,
+    activeMenu: "alunos",
+    servidorDw3: process.env.SERVIDOR_DW3,
+  });
+});
+
+app.get("/cursos", function (req, res) {
+  res.render("cursos", {
+    title: "Cursos",
+    showNavbar: true,
+    activeMenu: "cursos",
+    servidorDw3: process.env.SERVIDOR_DW3,
   });
 });
 

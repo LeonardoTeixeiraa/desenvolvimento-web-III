@@ -1,0 +1,93 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <header class="page-header mb-4">
+    <p class="page-kicker text-primary fw-semibold mb-2">Sistema administrativo</p>
+    <h1 class="display-6 fw-bold mb-2">Alunos</h1>
+    <p class="text-secondary mb-0">Listagem de alunos cadastrados.</p>
+  </header>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <div id="alunoError" class="alert alert-danger d-none" role="alert"></div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Prontuário</th>
+              <th>Nome</th>
+              <th>Endereço</th>
+              <th>Renda</th>
+              <th>Data de nascimento</th>
+              <th>Curso</th>
+            </tr>
+          </thead>
+          <tbody id="alunosTableBody">
+            <tr>
+              <td colspan="7" class="text-center text-secondary">Carregando alunos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/dw3frontend.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!dw3IsLogged()) {
+        return;
+      }
+
+      var servidorDw3 = ("{{ servidorDw3 }}" || "http://localhost:40000").trim().replace(/\/+$/, "");
+      var tableBody = document.getElementById("alunosTableBody");
+      var errorBox = document.getElementById("alunoError");
+
+      fetch(servidorDw3 + "/getAllAlunos", {
+        method: "GET",
+        headers: dw3MontarHeadersAutenticacao({
+          "Content-Type": "application/json",
+        }),
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("Não foi possível carregar os alunos.");
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          var registros = data && data.registro ? data.registro : [];
+
+          if (!registros.length) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary">Nenhum aluno encontrado.</td></tr>';
+            return;
+          }
+
+          tableBody.innerHTML = registros
+            .map(function (aluno) {
+              return (
+                "<tr>" +
+                  "<td>" + (aluno.alunoid || "") + "</td>" +
+                  "<td>" + (aluno.prontuario || "") + "</td>" +
+                  "<td>" + (aluno.nome || "") + "</td>" +
+                  "<td>" + (aluno.endereco || "") + "</td>" +
+                  "<td>" + (aluno.rendafamiliar || "") + "</td>" +
+                  "<td>" + (aluno.datanascimento || "") + "</td>" +
+                  "<td>" + (aluno.descricao || "") + "</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+        })
+        .catch(function (error) {
+          if (errorBox) {
+            errorBox.textContent = error.message || "Erro ao carregar alunos.";
+            errorBox.classList.remove("d-none");
+          }
+          tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary">Não foi possível carregar os alunos.</td></tr>';
+        });
+    });
+  </script>
+{% endblock %}
