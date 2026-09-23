@@ -1,79 +1,34 @@
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
-var nunjucks = require("nunjucks");
-
-require("dotenv").config({
-  path: path.join(__dirname, "..", "dw3frontend.env"),
-  quiet: true,
-});
-
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
+var indexRouter = require("./routes/index");
+var usersRouter = require("./routes/users"); // Remover
+var rtCursos = require("./routes/rtCursos");
 var app = express();
-var viewsPath = path.join(__dirname, "views");
-const port = process.env.PORT || 40100;
-
-app.set("views", viewsPath);
-app.set("view engine", "njk");
-
-nunjucks.configure(viewsPath, {
-  autoescape: true,
-  express: app,
-  noCache: app.get("env") === "development",
-});
-
+// view engine setup
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "vash");
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/", function (req, res) {
-  res.redirect("/login");
-});
-
-app.get("/login", function (req, res) {
-  res.render("login", {
-    title: "Login",
-    showNavbar: false,
-    servidorDw3: process.env.SERVIDOR_DW3,
-  });
-});
-
-app.get("/home", function (req, res) {
-  res.render("home", {
-    title: "Home",
-    showNavbar: true,
-    activeMenu: "home",
-  });
-});
-
-app.get("/alunos", function (req, res) {
-  res.render("alunos", {
-    title: "Alunos",
-    showNavbar: true,
-    activeMenu: "alunos",
-    servidorDw3: process.env.SERVIDOR_DW3,
-  });
-});
-
-app.get("/cursos", function (req, res) {
-  res.render("cursos", {
-    title: "Cursos",
-    showNavbar: true,
-    activeMenu: "cursos",
-    servidorDw3: process.env.SERVIDOR_DW3,
-  });
-});
-
+app.use("/", indexRouter);
+app.use("/cursos", rtCursos);
+app.use("/users", usersRouter); // remover
+// catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
-
+// error handler
 app.use(function (err, req, res, next) {
+  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
+  // render the error page
   res.status(err.status || 500);
-  res.render("error", { title: "Erro" });
+  res.render("error");
 });
-
-app.listen(port, () => {
-  console.log(`App listening at port ${port}`);
-});
+module.exports = app;

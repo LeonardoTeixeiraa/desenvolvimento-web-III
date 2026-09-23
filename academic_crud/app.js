@@ -5,6 +5,10 @@ require("dotenv").config();
 
 const router = require("./routes/router");
 
+var indexRouter = require("./routes/index");
+var alunosRouter = require("./routes/rte_alunos");
+var cursosRouter = require("./routes/rte_cursos");
+
 const port = 40000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -27,6 +31,9 @@ app.use((req, res, next) => {
 });
 
 app.use(router);
+app.use("/", indexRouter);
+app.use("/alunos", alunosRouter);
+app.use("/cursos", cursosRouter);
 
 app.listen(port, () => {
   console.log(`App listening at port ${port}`);
