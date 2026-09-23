@@ -1,0 +1,113 @@
+<!-- Arquivo views/cursos/view_cadCursos.vash -->
+@html.extend('layout', function(model){
+@html.block('content', function(model){
+<main>
+<div class="container-fluid px-4">
+<h1 class="mt-2">@model.title</h1>
+<ol class="breadcrumb mb-2">
+<li class="breadcrumb-item active">@model.title</li>
+</ol>
+<div class="row">
+<div class="col-xl-12">
+<div class="card-header">
+</div>
+<div class="card-body">
+<div class="col-xl-5">
+<form id="form">
+<div class="mb-1" style="display: none">
+<input type="text" name="id" value="@model.data.cursoid" class="form-control" id="id">
+</div>
+<div class="mb-1">
+<label for="codigo" class="form-label">Código</label>
+<input type="text" name="codigo" value="@model.data.codigo" class="form-control" id="codigo" @(model.oper=='v' ? 'disabled' : '' )>
+</div>
+<div class="mb-1">
+<label for="descricao" class="form-label">Descrição</label>
+<input type="text" name="descricao" value="@model.data.descricao" class="form-control" id="descricao" @(model.oper=='v' ? 'disabled' : '' )>
+</div>
+<div class="mb-1">
+<label for="ativo" class="form-label">Ativo</label>
+<select class="form-select" aria-label="Status do curso" id="ativo" @(model.oper=='v' ? 'disabled' : '' ) name="ativo">
+@if (model.data.ativo === true || model.data.ativo == 'true') {
+<option value="true" selected>Sim</option>
+<option value="false">Não</option>
+} else {
+<option value="true">Sim</option>
+<option value="false" selected>Não</option>
+}
+</select>
+</div>
+@if (model.oper=="c") {
+<button type="submit" class="btn btn-success me-2" formmethod="POST">Salvar</button>
+}
+</form>
+<div>
+@if (model.oper=="vu") {
+<button type="button" class="btn btn-warning me-2 mb-3" onclick="alteraRegistro()">Salvar Alteração</button>
+}
+@if (model.oper=="v") {
+<button type="button" class="btn btn-warning me-2 mb-3" onclick="window.open('/cursos/viewCursos/' + $('#id').val() + '/vu', '_self')">Alterar</button>
+}
+@if (model.oper=="v") {
+<button type="button" class="btn btn-danger mb-3" onclick="deleteCurso()">Remover</button>
+}
+</div>
+<button type="button" class="btn btn-primary" onclick="window.location.href = '/cursos'">Fechar sem salvar</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+})
+})
+<script>
+$('#form').on('submit', function () {
+  if ($('#codigo').val() == "") {
+    alert("Informe o código do curso");
+    return false;
+  }
+  if ($('#descricao').val() == "") {
+    alert("Informe a descrição do curso");
+    return false;
+  }
+  return true;
+});
+
+async function alteraRegistro() {
+  resp = await axios.post("/cursos/viewCursos", {
+    id: $("#id").val(),
+    codigo: $("#codigo").val(),
+    descricao: $("#descricao").val(),
+    ativo: $("#ativo").val() === "true",
+    deleted: false,
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+
+  if (resp.data.status == "ok") {
+    alert("Curso alterado com sucesso!");
+  } else {
+    alert("Houve erro ao alterar os dados do curso!");
+  }
+}
+
+async function deleteCurso() {
+  resp = await axios.post("/cursos/DeleteCursos", {
+    id: $("#id").val(),
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+
+  if (resp.data.status == "ok") {
+    alert("Curso removido com sucesso!");
+    window.open("/cursos", "_self");
+  } else {
+    alert("Houve erro ao remover os dados do curso!");
+  }
+}
+</script>
