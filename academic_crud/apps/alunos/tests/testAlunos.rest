@@ -34,6 +34,12 @@ Authorization: Bearer {{accessToken}}
 GET http://localhost:40000/getAlunoByID/1 HTTP/1.1
 content-type: application/json
 Authorization: Bearer {{accessToken}}
+
+### teste de buscar cursos para alunos
+GET http://localhost:40000/getCursosToAlunos HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{accessToken}}
+
 ### teste de atualização de aluno
 PUT http://localhost:40000/updateAluno/1 HTTP/1.1
 content-type: application/json
