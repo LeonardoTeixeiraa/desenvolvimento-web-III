@@ -33,7 +33,7 @@ function dw3MontarHeadersAutenticacao(headers) {
 
   return finalHeaders;
 }
-
+  
 function dw3OcultarBotao(id) {
   var botao = document.getElementById(id);
 
