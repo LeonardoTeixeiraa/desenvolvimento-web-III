@@ -50,13 +50,14 @@ router.get("/", async function (req, res) {
       method: "GET",
     });
 
-    res.render("cursos/view_manutencao.vash", {
+    res.render("cursos", {
       title: "Manutenção de cursos",
       data: data,
       showNavbar: true,
+      activeMenu: "cursos",
     });
   } catch (error) {
-    res.status(500).render("error.vash", {
+    res.status(500).render("error", {
       title: "Erro",
       message: error.message,
     });
@@ -64,11 +65,12 @@ router.get("/", async function (req, res) {
 });
 
 router.get("/insertCursos", function (req, res) {
-  res.render("cursos/view_cadCursos.vash", {
+  res.render("cursos", {
     title: "Cadastro de cursos",
     data: criarCursoPadrao(),
     oper: "c",
     showNavbar: true,
+    activeMenu: "cursos",
   });
 });
 
@@ -86,14 +88,15 @@ router.get("/viewCursos/:id/:oper", async function (req, res) {
         ? data.registro[0]
         : criarCursoPadrao();
 
-    res.render("cursos/view_cadCursos.vash", {
+    res.render("cursos", {
       title: "Cadastro de cursos",
       data: registro,
       oper: oper,
       showNavbar: true,
+      activeMenu: "cursos",
     });
   } catch (error) {
-    res.status(500).render("error.vash", {
+    res.status(500).render("error", {
       title: "Erro",
       message: error.message,
     });
@@ -119,14 +122,15 @@ router.post("/insertCursos", async function (req, res) {
       return res.redirect("/cursos");
     }
 
-    res.status(400).render("cursos/view_cadCursos.vash", {
+    res.status(400).render("cursos", {
       title: "Cadastro de cursos",
       data: Object.assign({ cursoid: 0 }, payload),
       oper: "c",
       showNavbar: true,
+      activeMenu: "cursos",
     });
   } catch (error) {
-    res.status(500).render("error.vash", {
+    res.status(500).render("error", {
       title: "Erro",
       message: error.message,
     });
