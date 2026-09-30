@@ -13,7 +13,7 @@ const getAllAlunos = (req, res) =>
         userName: userName,
       });
     } catch (erro) {
-      console.log("[ctlAlunos.js|getAllAlunos] Try Catch:Erro de requisição");
+      console.log("[ctlAlunos.js|getAllAlunos] Try Catch:Erro de re quisição");
     }
   })();
 //@ Função para validar campos no formulário
