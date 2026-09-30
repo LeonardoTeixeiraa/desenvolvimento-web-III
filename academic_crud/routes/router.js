@@ -10,13 +10,8 @@ const appLogin = require("../apps/login/controller/ctlLogin");
 routerApp.post(["/Login", "/login"], appLogin.Login);
 routerApp.post(["/Logout", "/logout"], appLogin.Logout);
 
-// middleware that is specific to this router
 routerApp.use((req, res, next) => {
   next();
-});
-
-routerApp.get("/", (req, res) => {
-  res.send("Olá mundo!");
 });
 
 //Rotas de Alunos
@@ -26,6 +21,13 @@ routerApp.get(
   appLogin.AutenticaJWT,
   appAlunos.GetAlunoByID,
 );
+
+routerApp.get(
+  "/getCursosToAlunos",
+  appLogin.AutenticaJWT,
+  appAlunos.GetCursosToAlunos,
+);
+
 routerApp.post("/insertAluno", appLogin.AutenticaJWT, appAlunos.InsertAluno);
 routerApp.put(
   "/updateAluno/:alunoid",

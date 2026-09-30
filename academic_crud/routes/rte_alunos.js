@@ -1,10 +1,10 @@
 //Arquivo routes/rte_alunos.js
 var express = require("express");
-var alunosApp = require("../app/alunos/controller/ctlAlunos");
+var alunosApp = require("../apps/alunos/controller/ctlAluno");
 var router = express.Router();
 //Função necessária para evitar que usuários não autenticados acessem o sistema.
 function authenticationMiddleware(req, res, next) {
-  // Verificar se existe uma sess?o v?lida.
+  // Verificar se existe uma sessão válida.
   isLogged = req.session.isLogged;
   if (!isLogged) {
     res.redirect("/Login");
@@ -13,16 +13,19 @@ function authenticationMiddleware(req, res, next) {
 }
 
 /* GET métodos */
-router.get("/", authenticationMiddleware, alunosApp.getAllAlunos);
-router.get("/insertAlunos", authenticationMiddleware, alunosApp.insertAlunos);
+router.get("/", authenticationMiddleware, alunosApp.GetAllAlunos);
+router.get("/insertAlunos", authenticationMiddleware, alunosApp.InsertAluno);
 router.get(
-  "/viewAlunos/:id/:oper",
+  "/viewAlunos/:alunoid/:oper",
   authenticationMiddleware,
-  alunosApp.viewAlunos,
+  alunosApp.GetAlunoByID,
 );
 /* POST métodos */
-router.post("/insertAlunos", authenticationMiddleware, alunosApp.insertAlunos);
-router.post("/DeleteAlunos", authenticationMiddleware, alunosApp.DeleteAlunos);
-router.post("/viewAlunos", authenticationMiddleware, alunosApp.viewAlunos);
+router.post("/insertAlunos", authenticationMiddleware, alunosApp.InsertAluno);
+router.post("/DeleteAlunos", authenticationMiddleware, alunosApp.DeleteAluno);
+router.put(
+  "/viewAlunos/:alunoid",
+  authenticationMiddleware,
+  alunosApp.UpdateAluno,
+);
 module.exports = router;
-
