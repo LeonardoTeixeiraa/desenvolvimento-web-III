@@ -16,6 +16,11 @@ const GetAlunoByID = async (alunoIDPar) => {
     )
   ).rows;
 };
+
+const GetCursosToAlunos = async () => {
+return (await db.query("select cursoid, descricao from cursos")).rows;
+};
+
 const InsertAluno = async (alunoREGPar) => {
   //@ Atenção: aqui já começamos a utilizar a variável msg para retornor erros de banco de dados.
   let linhasAfetadas;
@@ -94,6 +99,7 @@ const DeleteAluno = async (alunoIDPar) => {
 module.exports = {
   GetAllAlunos,
   GetAlunoByID,
+  GetCursosToAlunos,
   InsertAluno,
   UpdateAluno,
   DeleteAluno,
