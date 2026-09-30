@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const router = require("./routes/router");
 
-var indexRouter = require("./routes/index");
+var indexRouter = require("./routes/rtIndex");
 var alunosRouter = require("./routes/rte_alunos");
 var cursosRouter = require("./routes/rte_cursos");
 
