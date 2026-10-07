@@ -1,0 +1,57 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <header class="page-header mb-4">
+    <p class="page-kicker text-primary fw-semibold mb-2">Sistema administrativo</p>
+    <h1 class="display-6 fw-bold mb-2">
+      {% if oper == 'De' %}Excluir aluno{% elif oper == 'Up' %}Editar aluno{% else %}Visualizar aluno{% endif %}
+    </h1>
+    <p class="text-secondary mb-0">Dados cadastrais do aluno.</p>
+  </header>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <div id="alunoViewError" class="alert alert-danger d-none" role="alert"></div>
+
+      {% if data and data.alunoid %}
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label text-secondary">ID</label>
+            <div class="form-control bg-light">{{ data.alunoid }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-secondary">Prontuário</label>
+            <div class="form-control bg-light">{{ data.prontuario }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-secondary">Nome</label>
+            <div class="form-control bg-light">{{ data.nome }}</div>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label text-secondary">Endereço</label>
+            <div class="form-control bg-light">{{ data.endereco }}</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-secondary">Renda familiar</label>
+            <div class="form-control bg-light">{{ data.rendafamiliar }}</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-secondary">Data de nascimento</label>
+            <div class="form-control bg-light">{{ data.datanascimento }}</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label text-secondary">Curso</label>
+            <div class="form-control bg-light">{{ data.descricao or '-' }}</div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a class="btn btn-primary" href="/alunos/view?alunoId={{ data.alunoid }}&oper=Up&token={{ token or '' }}">Editar</a>
+          <a class="btn btn-danger" href="/alunos/view?alunoId={{ data.alunoid }}&oper=De&token={{ token or '' }}">Excluir</a>
+        </div>
+      {% else %}
+        <div class="alert alert-warning" role="alert">Aluno não encontrado.</div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
