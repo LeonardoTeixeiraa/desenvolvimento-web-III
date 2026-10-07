@@ -1,24 +1,36 @@
 const db = require("../../../database/databaseconfig");
+
 const GetAllAlunos = async () => {
   return (
     await db.query(
-      "SELECT *,(SELECT descricao from CURSOS where cursoid = alunos.cursoid)" +
-        "FROM alunos where deleted = false ORDER BY nome ASC",
+      `SELECT a.*, c.descricao AS descricao
+       FROM alunos a
+       LEFT JOIN cursos c ON c.cursoid = a.cursoid
+       WHERE a.deleted = false
+       ORDER BY a.nome ASC`,
     )
   ).rows;
 };
+
 const GetAlunoByID = async (alunoIDPar) => {
   return (
     await db.query(
-      "SELECT *, (SELECT descricao from CURSOS where cursoid = alunos.cursoid)" +
-        "FROM alunos WHERE alunoid = $1 and deleted = false ORDER BY nome ASC",
+      `SELECT a.*, c.descricao AS descricao
+       FROM alunos a
+       LEFT JOIN cursos c ON c.cursoid = a.cursoid
+       WHERE a.alunoid = $1 AND a.deleted = false
+       ORDER BY a.nome ASC`,
       [alunoIDPar],
     )
   ).rows;
 };
 
 const GetCursosToAlunos = async () => {
-return (await db.query("select cursoid, descricao from cursos")).rows;
+  return (
+    await db.query(
+      "SELECT cursoid, descricao FROM cursos WHERE deleted = false ORDER BY descricao ASC",
+    )
+  ).rows;
 };
 
 const InsertAluno = async (alunoREGPar) => {
@@ -36,7 +48,7 @@ const InsertAluno = async (alunoREGPar) => {
           alunoREGPar.rendafamiliar,
           alunoREGPar.datanascimento,
           alunoREGPar.cursoid,
-          alunoREGPar.deleted,
+          alunoREGPar.deleted === undefined ? false : alunoREGPar.deleted,
         ],
       )
     ).rowCount;
@@ -46,6 +58,7 @@ const InsertAluno = async (alunoREGPar) => {
   }
   return { msg, linhasAfetadas };
 };
+
 const UpdateAluno = async (alunoIDPar, alunoREGPar) => {
   let linhasAfetadas;
   let msg = "ok";
@@ -69,7 +82,7 @@ const UpdateAluno = async (alunoIDPar, alunoREGPar) => {
           alunoREGPar.rendafamiliar,
           alunoREGPar.datanascimento,
           alunoREGPar.cursoid,
-          alunoREGPar.deleted,
+          alunoREGPar.deleted === undefined ? false : alunoREGPar.deleted,
         ],
       )
     ).rowCount;
@@ -79,6 +92,7 @@ const UpdateAluno = async (alunoIDPar, alunoREGPar) => {
   }
   return { msg, linhasAfetadas };
 };
+
 const DeleteAluno = async (alunoIDPar) => {
   let linhasAfetadas;
   let msg = "ok";

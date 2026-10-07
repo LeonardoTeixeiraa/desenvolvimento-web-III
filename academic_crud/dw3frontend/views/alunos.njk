@@ -7,6 +7,12 @@
     <p class="text-secondary mb-0">Listagem de alunos cadastrados.</p>
   </header>
 
+  <div class="d-flex justify-content-end mb-3">
+    <a class="btn btn-primary" href="/alunos/form?oper=Cr&alunoId=0">
+      <i class="bi bi-plus-lg me-1"></i>Novo aluno
+    </a>
+  </div>
+
   <div class="card border-0 shadow-sm">
     <div class="card-body p-4">
       <div id="alunoError" class="alert alert-danger d-none" role="alert"></div>
@@ -22,11 +28,12 @@
               <th>Renda</th>
               <th>Data de nascimento</th>
               <th>Curso</th>
+              <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody id="alunosTableBody">
             <tr>
-              <td colspan="7" class="text-center text-secondary">Carregando alunos...</td>
+              <td colspan="8" class="text-center text-secondary">Carregando alunos...</td>
             </tr>
           </tbody>
         </table>
@@ -41,6 +48,7 @@
         return;
       }
 
+      var token = localStorage.getItem("token") || "";
       var servidorDw3 = ("{{ servidorDw3 }}" || "http://localhost:40000").trim().replace(/\/+$/, "");
       var tableBody = document.getElementById("alunosTableBody");
       var errorBox = document.getElementById("alunoError");
@@ -61,21 +69,27 @@
           var registros = data && data.registro ? data.registro : [];
 
           if (!registros.length) {
-            tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary">Nenhum aluno encontrado.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary">Nenhum aluno encontrado.</td></tr>';
             return;
           }
 
           tableBody.innerHTML = registros
             .map(function (aluno) {
+              var alunoId = encodeURIComponent(aluno.alunoid || "");
+              var cursoNome = aluno.descricao || "-";
+              var dataNascimento = aluno.datanascimento ? new Date(aluno.datanascimento + "T00:00:00").toLocaleDateString("pt-BR") : "-";
               return (
                 "<tr>" +
                   "<td>" + (aluno.alunoid || "") + "</td>" +
                   "<td>" + (aluno.prontuario || "") + "</td>" +
                   "<td>" + (aluno.nome || "") + "</td>" +
                   "<td>" + (aluno.endereco || "") + "</td>" +
-                  "<td>" + (aluno.rendafamiliar || "") + "</td>" +
-                  "<td>" + (aluno.datanascimento || "") + "</td>" +
-                  "<td>" + (aluno.descricao || "") + "</td>" +
+                  "<td>" + (aluno.rendafamiliar != null ? Number(aluno.rendafamiliar).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "-") + "</td>" +
+                  "<td>" + dataNascimento + "</td>" +
+                  "<td>" + cursoNome + "</td>" +
+                  "<td class='text-center'><div class='btn-group btn-group-sm' role='group'>" +
+                  "<a class='btn btn-primary' href='/alunos/view?alunoId=" + alunoId + "&oper=Re&token=" + encodeURIComponent(token) + "' title='Visualizar'><i class='bi bi-eye'>Visualizar</i></a>" +
+                  "</div></td>" +
                 "</tr>"
               );
             })
@@ -86,7 +100,7 @@
             errorBox.textContent = error.message || "Erro ao carregar alunos.";
             errorBox.classList.remove("d-none");
           }
-          tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary">Não foi possível carregar os alunos.</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary">Não foi possível carregar os alunos.</td></tr>';
         });
     });
   </script>
