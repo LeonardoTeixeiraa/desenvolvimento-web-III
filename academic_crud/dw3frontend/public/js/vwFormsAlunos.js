@@ -1,45 +1,74 @@
+const parametros = new URLSearchParams(window.location.search);
+
 document.addEventListener("DOMContentLoaded", function () {
   if (!dw3IsLogged()) {
     return;
   }
+
   var form = document.getElementById("frmAlunos");
   if (!form) {
     return;
   }
-  var oper = parametros.get("oper") || parametros.get("Oper");
+
+  var oper = (parametros.get("oper") || parametros.get("Oper") || "Cr").trim();
   var servidorDw3 = form.dataset.servidorDw3;
   var btnInserir = document.getElementById("btnInserirAluno");
+  var btnAtualizar = document.getElementById("btnAtualizarAluno");
+  var btnRemover = document.getElementById("btnRemoverAluno");
+
   inicializarSelectCursos();
+
   if (oper === "Cr") {
-    btnInserir.classList.remove("d-none"); // Torna o Botão visível.
+    if (btnInserir) {
+      btnInserir.classList.remove("d-none");
+    }
     carregarCursosToAlunos(servidorDw3);
   }
+
+  if (btnAtualizar) {
+    btnAtualizar.classList.add("d-none");
+  }
+
+  if (btnRemover) {
+    btnRemover.classList.add("d-none");
+  }
+
   if (btnInserir) {
     btnInserir.addEventListener("click", function () {
       vwInsertAluno();
     });
   }
 });
+
 // Aqui é inicializado o componente Select2.js em branco
 function inicializarSelectCursos() {
-  $("#cursoid").select2({
+  var cursoSelect = document.getElementById("cursoid");
+  if (!cursoSelect) {
+    return;
+  }
+
+  $(cursoSelect).select2({
     theme: "bootstrap-5",
     placeholder: "Selecione um curso",
     width: "100%",
   });
 }
+
 // Aqui é preenchido o componente Select2 com os cursos disponíveis
 async function carregarCursosToAlunos(servidorDw3) {
   try {
     if (!servidorDw3) {
       throw new Error("Endereço do servidor backend nao configurado.");
     }
+
     var response = await fetch(servidorDw3 + "/getCursosToAlunos", {
-      headers: dw3MontarHeadersAutenticacao(), // Função que está no arquivo public/js/dw3frontend.js
+      headers: dw3MontarHeadersAutenticacao(),
     });
+
     if (!response.ok) {
       throw new Error("Não foi possivel carregar os cursos.");
     }
+
     var data = await response.json();
     if (data.auth === false) {
       throw new Error(data.message || "Sessão expirada. Faca login novamente.");
@@ -47,39 +76,49 @@ async function carregarCursosToAlunos(servidorDw3) {
     if (data.status !== "ok" || !Array.isArray(data.registro)) {
       throw new Error("Resposta invalida do servidor backend.");
     }
+
     preencherSelectCursos(data.registro);
   } catch (error) {
     alert(error.message || "Erro ao carregar cursos.");
   }
 }
+
 function preencherSelectCursos(cursos) {
   var cursoSelect = document.getElementById("cursoid");
   if (!cursoSelect) {
     return;
   }
+
   cursoSelect.innerHTML = '<option value="">Selecione um curso</option>';
+
   cursos.forEach(function (curso) {
     var option = document.createElement("option");
     option.value = curso.cursoid;
     option.textContent = curso.descricao;
     cursoSelect.appendChild(option);
   });
-  $("#cursoid").trigger("change");
+
+  $(cursoSelect).trigger("change");
 }
+
 async function vwInsertAluno() {
   var form = document.getElementById("frmAlunos");
   var btnInserir = document.getElementById("btnInserirAluno");
+
   try {
     if (!form.reportValidity()) {
       return;
     }
+
     var servidorDw3 = form.dataset.servidorDw3;
     if (!servidorDw3) {
       throw new Error("Endereco do servidor backend nao configurado.");
     }
+
     if (btnInserir) {
       btnInserir.disabled = true;
     }
+
     var response = await fetch(servidorDw3 + "/insertAluno", {
       method: "POST",
       headers: dw3MontarHeadersAutenticacao({
@@ -87,9 +126,11 @@ async function vwInsertAluno() {
       }),
       body: JSON.stringify(montarAlunoDoFormulario()),
     });
+
     if (!response.ok) {
       throw new Error("Nao foi possivel inserir o aluno.");
     }
+
     var data = await response.json();
     if (data.auth === false) {
       throw new Error(data.message || "Sessao expirada. Faca login novamente.");
@@ -97,6 +138,7 @@ async function vwInsertAluno() {
     if (data.status !== "ok") {
       throw new Error(data.status || "Nao foi possivel inserir o aluno.");
     }
+
     window.location.href = "/alunos";
   } catch (error) {
     alert(error.message || "Erro ao inserir aluno.");
@@ -106,6 +148,7 @@ async function vwInsertAluno() {
     }
   }
 }
+
 function montarAlunoDoFormulario() {
   return {
     prontuario: document.getElementById("prontuario").value,
