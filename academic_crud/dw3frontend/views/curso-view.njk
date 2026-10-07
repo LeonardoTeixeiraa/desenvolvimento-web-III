@@ -1,0 +1,44 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <header class="page-header mb-4">
+    <p class="page-kicker text-primary fw-semibold mb-2">Sistema administrativo</p>
+    <h1 class="display-6 fw-bold mb-2">
+      {% if oper == 'De' %}Excluir curso{% elif oper == 'Up' %}Editar curso{% else %}Visualizar curso{% endif %}
+    </h1>
+    <p class="text-secondary mb-0">Dados cadastrais do curso.</p>
+  </header>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <div id="cursoViewError" class="alert alert-danger d-none" role="alert"></div>
+
+      {% if data and data.cursoid %}
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label text-secondary">ID</label>
+            <div class="form-control bg-light">{{ data.cursoid }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-secondary">Código</label>
+            <div class="form-control bg-light">{{ data.codigo }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-secondary">Descrição</label>
+            <div class="form-control bg-light">{{ data.descricao }}</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-secondary">Ativo</label>
+            <div class="form-control bg-light">{{ 'Sim' if data.ativo else 'Não' }}</div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a class="btn btn-primary" href="/cursos/view?cursoId={{ data.cursoid }}&oper=Up&token={{ token or '' }}">Editar</a>
+          <a class="btn btn-danger" href="/cursos/view?cursoId={{ data.cursoid }}&oper=De&token={{ token or '' }}">Excluir</a>        </div>
+      {% else %}
+        <div class="alert alert-warning" role="alert">Curso não encontrado.</div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
