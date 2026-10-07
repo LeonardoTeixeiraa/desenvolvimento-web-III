@@ -7,6 +7,12 @@
     <p class="text-secondary mb-0">Listagem de cursos cadastrados.</p>
   </header>
 
+  <div class="d-flex justify-content-end mb-3">
+    <a class="btn btn-primary" href="/cursos/insertCursos">
+      <i class="bi bi-plus-lg me-1"></i>Novo curso
+    </a>
+  </div>
+
   <div class="card border-0 shadow-sm">
     <div class="card-body p-4">
       <div id="cursoError" class="alert alert-danger d-none" role="alert"></div>
@@ -19,11 +25,12 @@
               <th>Código</th>
               <th>Descrição</th>
               <th>Ativo</th>
+              <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody id="cursosTableBody">
             <tr>
-              <td colspan="4" class="text-center text-secondary">Carregando cursos...</td>
+              <td colspan="5" class="text-center text-secondary">Carregando cursos...</td>
             </tr>
           </tbody>
         </table>
@@ -38,6 +45,7 @@
         return;
       }
 
+      var token = localStorage.getItem("token") || "";
       var servidorDw3 = ("{{ servidorDw3 }}" || "http://localhost:40000").trim().replace(/\/+$/, "");
       var tableBody = document.getElementById("cursosTableBody");
       var errorBox = document.getElementById("cursoError");
@@ -58,18 +66,22 @@
           var registros = data && data.registro ? data.registro : [];
 
           if (!registros.length) {
-            tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary">Nenhum curso encontrado.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary">Nenhum curso encontrado.</td></tr>';
             return;
           }
 
           tableBody.innerHTML = registros
             .map(function (curso) {
+              var cursoId = encodeURIComponent(curso.cursoid || "");
               return (
                 "<tr>" +
                   "<td>" + (curso.cursoid || "") + "</td>" +
                   "<td>" + (curso.codigo || "") + "</td>" +
                   "<td>" + (curso.descricao || "") + "</td>" +
                   "<td>" + (curso.ativo ? "Sim" : "Não") + "</td>" +
+                  "<td class='text-center'><div class='btn-group btn-group-sm' role='group'>" +
+                  "<a class='btn btn-primary' href='/cursos/view?cursoId=" + cursoId + "&oper=Re&token=" + encodeURIComponent(token) + "' title='Visualizar'><i class='bi bi-eye'>Visualizar</i></a>" +
+                  "</div></td>" +
                 "</tr>"
               );
             })
@@ -80,7 +92,7 @@
             errorBox.textContent = error.message || "Erro ao carregar cursos.";
             errorBox.classList.remove("d-none");
           }
-          tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary">Não foi possível carregar os cursos.</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary">Não foi possível carregar os cursos.</td></tr>';
         });
     });
   </script>

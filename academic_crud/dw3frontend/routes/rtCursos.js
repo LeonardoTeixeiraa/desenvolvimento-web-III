@@ -48,6 +48,12 @@ router.get("/", async function (req, res) {
   try {
     var data = await buscarApi(backendUrl + "/getAllCursos", {
       method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:
+          "Bearer " +
+          (req.cookies && req.cookies.token ? req.cookies.token : ""),
+      },
     });
 
     res.render("cursos", {
@@ -55,6 +61,49 @@ router.get("/", async function (req, res) {
       data: data,
       showNavbar: true,
       activeMenu: "cursos",
+      servidorDw3: backendUrl,
+    });
+  } catch (error) {
+    res.status(500).render("error", {
+      title: "Erro",
+      message: error.message,
+    });
+  }
+});
+
+router.get("/view", async function (req, res) {
+  var id = req.query.cursoId;
+  var oper = req.query.oper || "Re";
+  var token = req.query.token || "";
+
+  try {
+    if (!id) {
+      return res.status(400).render("error", {
+        title: "Erro",
+        message: "Identificador do curso não informado.",
+      });
+    }
+
+    var data = await buscarApi(backendUrl + "/getCursoByID/" + id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    var registro =
+      data && data.registro && Array.isArray(data.registro)
+        ? data.registro[0] || criarCursoPadrao()
+        : criarCursoPadrao();
+
+    res.render("curso-view", {
+      title: "Curso",
+      showNavbar: true,
+      activeMenu: "cursos",
+      oper: oper,
+      token: token,
+      data: registro,
     });
   } catch (error) {
     res.status(500).render("error", {
@@ -65,12 +114,13 @@ router.get("/", async function (req, res) {
 });
 
 router.get("/insertCursos", function (req, res) {
-  res.render("cursos", {
+  res.render("cursos/vwFormCursos", {
     title: "Cadastro de cursos",
     data: criarCursoPadrao(),
     oper: "c",
     showNavbar: true,
     activeMenu: "cursos",
+    servidorDw3: backendUrl,
   });
 });
 
